@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 
+
+
 interface AssemblyRecord {
   id: number;
   head: string;
@@ -15,25 +17,19 @@ export default function AssemblyHistory() {
   const [history, setHistory] = useState<AssemblyRecord[]>([]);
 
   useEffect(() => {
-    // Cargar historial inicial
-    const savedHistory = localStorage.getItem("assemblyHistory");
-    if (savedHistory) {
-      setHistory(JSON.parse(savedHistory));
-    }
-
-    // Escuchar eventos de ensamblaje completado
-    const handleAssemblyCompleted = () => {
-      const updatedHistory = JSON.parse(
-        localStorage.getItem("assemblyHistory") || "[]"
-      );
-      setHistory(updatedHistory);
+    const fetchHistory = async () => {
+      try {
+        const response = await fetch(
+          "https://backend-chayarm.onrender.com/database/getHistory?select=%2A"
+        );
+        const data = await response.json();
+        setHistory(data);
+      } catch (error) {
+        console.error("Error al obtener el historial:", error);
+      }
     };
 
-    window.addEventListener("assemblyCompleted", handleAssemblyCompleted);
-
-    return () => {
-      window.removeEventListener("assemblyCompleted", handleAssemblyCompleted);
-    };
+    fetchHistory();
   }, []);
 
   return (
@@ -61,7 +57,7 @@ export default function AssemblyHistory() {
                     ></div>
                     <div
                       className="w-4 h-4 rounded-sm"
-                      style={{ backgroundColor: record.head }}
+                      style={{ backgroundColor: record.torso }}
                     ></div>
                     <div
                       className="w-4 h-4 rounded-sm"
@@ -76,7 +72,8 @@ export default function AssemblyHistory() {
                   </div>
                 </div>
                 <div className="text-sm">
-                  Personaje con cabeza {getColorName(record.head)} y piernas{" "}
+                  Personaje con cabeza {getColorName(record.head)}, torso{" "}
+                  {getColorName(record.torso)} y piernas{" "}
                   {getColorName(record.legs)}
                 </div>
               </li>
@@ -92,7 +89,7 @@ export default function AssemblyHistory() {
 function getColorName(hexColor: string): string {
   const colorMap: Record<string, string> = {
     "#D3D3D3": "gris",
-    "#FFD700": "dorada",
+    "#FFD700": "dorado",
     "#FF6347": "rojo",
     "#98FB98": "verde claro",
     "#87CEFA": "azul claro",

@@ -65,65 +65,31 @@ export default function CharacterCreator() {
       body: COLORS.LEGS[legsIndex].replace("#", ""),
     }); */
 
-    const head = COLORS.HEAD[headIndex].replace("#", "");
-    const leg = COLORS.LEGS[legsIndex].replace("#", "");
-
     try {
-      const response = await fetch(
-        `http://127.0.0.1:8000/esp32/?head=${head}&body=${leg}`
-      );
+  const response = await fetch("https://backend-chayarm.onrender.com/database/potsHistory", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      head: COLORS.HEAD[headIndex],
+      torso: COLORS.HEAD[headIndex],
+      legs: COLORS.LEGS[legsIndex],
+    }),
+  });
 
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
-      }
+  if (!response.ok) {
+    throw new Error(`Error al guardar en el backend: ${response.status}`);
+  }
 
-      const data = await response.json();
-      console.log(data);
-    } catch (error) {
-      console.error("Error fetching item ", error);
-    }
-
-    setTimeout(() => {
-      // Añadir al historial
-      const newAssembly = {
-        id: Date.now(),
-        head: COLORS.HEAD[headIndex],
-        legs: COLORS.LEGS[legsIndex],
-        timestamp: new Date().toISOString(),
-      };
-
-      // Guardar en localStorage
-      const history = JSON.parse(
-        localStorage.getItem("assemblyHistory") || "[]"
-      );
-      localStorage.setItem(
-        "assemblyHistory",
-        JSON.stringify([newAssembly, ...history].slice(0, 10))
-      );
-
-      // Actualizar contadores
-      const counters = JSON.parse(
-        localStorage.getItem("piecesCounter") ||
-          JSON.stringify({
-            used: 0,
-            remaining: 100,
-          })
-      );
-
-      localStorage.setItem(
-        "piecesCounter",
-        JSON.stringify({
-          used: counters.used + 3, // 3 piezas por muñeco
-          remaining: counters.remaining - 3,
-        })
-      );
-
-      setAssembling(false);
-
-      // Disparar un evento personalizado para que otros componentes se actualicen
-      window.dispatchEvent(new CustomEvent("assemblyCompleted"));
-    }, 2000);
-  };
+  const result = await response.json();
+  console.log("Enviado correctamente al backend:", result);
+} catch (error) {
+  console.error("Error al enviar al backend:", error);
+}
+setAssembling(false);
+};
 
   return (
     <Card className="shadow-lg">
