@@ -47,7 +47,6 @@ export default function Home() {
             <CharacterCreator />
           </div>
           <div className="space-y-8">
-            <PieceCounter />
             <AssemblyHistory />
           </div>
         </div>
