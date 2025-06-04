@@ -11,10 +11,11 @@ import {
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Send } from "lucide-react";
 
+
 // Colores disponibles para las piezas
 const COLORS = {
-  HEAD: ["#D3D3D3", "#FFD700", "#FF6347"],
-  LEGS: ["#D3D3D3", "#FFD700", "#FF6347"],
+  HEAD: ["#D3D3D3", "#0074D9", "#FF6347"],
+  LEGS: ["#D3D3D3", "#0074D9", "#FF6347"],
 };
 
 type BodyPart = "HEAD" | "LEGS";
